@@ -360,7 +360,7 @@ arc_gen_atld_op(DisasCtxt *ctx, TCGv_i32 b, TCGv c);
  * evaluating the cc flag
  */
 #define ARC_GEN_SEMFUNC_INIT()                                          \
-    TCGv cc_temp = tcg_temp_local_new();                                \
+    TCGv cc_temp = tcg_temp_ebb_new_i32();                                \
     TCGLabel *cc_done  = gen_new_label();                               \
     if (ctx->insn.cc != ARC_COND_AL && ctx->insn.cc != ARC_COND_RA) {   \
         getCCFlag(cc_temp);                                             \
@@ -375,7 +375,7 @@ arc_gen_atld_op(DisasCtxt *ctx, TCGv_i32 b, TCGv c);
     if (ctx->insn.cc != ARC_COND_AL && ctx->insn.cc != ARC_COND_RA) {   \
         gen_set_label(cc_done);                                         \
     }                                                                   \
-    tcg_temp_free(cc_temp);
+    tcg_temp_free_i32(cc_temp);
 
 #define ARC_GEN_CMPL2_H0_I64(RET, ARG1)     arc_gen_cmpl2_i64(RET, ARG1, 0, 16)
 #define ARC_GEN_CMPL2_H1_I64(RET, ARG1)     arc_gen_cmpl2_i64(RET, ARG1, 16, 16)

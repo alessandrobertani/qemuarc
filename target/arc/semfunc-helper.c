@@ -23,6 +23,8 @@
 #include "translate.h"
 #include "qemu/bitops.h"
 #include "tcg/tcg.h"
+#include "tcg/tcg-temp-internal.h"
+#include "tcg/tcg-op.h"
 #include "semfunc-helper.h"
 #include "translate.h"
 
@@ -118,11 +120,11 @@ void arc_gen_verifyCCFlag(const DisasCtxt *ctx, TCGv ret)
         g_assert_not_reached();
     }
 
-    tcg_temp_free(c1);
-    tcg_temp_free(nZ);
-    tcg_temp_free(nN);
-    tcg_temp_free(nV);
-    tcg_temp_free(nC);
+    tcg_temp_free_i32(c1);
+    tcg_temp_free_i32(nZ);
+    tcg_temp_free_i32(nN);
+    tcg_temp_free_i32(nV);
+    tcg_temp_free_i32(nC);
 }
 
 /*
@@ -222,9 +224,9 @@ void arc_gen_sub_Cf(TCGv ret, TCGv dest, TCGv src1, TCGv src2)
     tcg_gen_or_tl(t2, t2, t3);
     tcg_gen_shri_tl(ret, t2, TARGET_LONG_BITS - 1);   /* Cf = t2[31/63] */
 
-    tcg_temp_free(t3);
-    tcg_temp_free(t2);
-    tcg_temp_free(t1);
+    tcg_temp_free_i32(t3);
+    tcg_temp_free_i32(t2);
+    tcg_temp_free_i32(t1);
 }
 
 
@@ -242,7 +244,7 @@ void arc_gen_mac(TCGv phi, TCGv b32, TCGv c32)
 
     /* Adding the product to the accumulator */
     tcg_gen_add2_tl(cpu_acclo, cpu_acchi, cpu_acclo, cpu_acchi, plo, phi);
-    tcg_temp_free(plo);
+    tcg_temp_free_i32(plo);
 }
 
 /* Unsigned version of mac */
@@ -253,7 +255,7 @@ void arc_gen_macu(TCGv phi, TCGv b32, TCGv c32)
 
     /* Adding the product to the accumulator */
     tcg_gen_add2_tl(cpu_acclo, cpu_acchi, cpu_acclo, cpu_acchi, plo, phi);
-    tcg_temp_free(plo);
+    tcg_temp_free_i32(plo);
 }
 
 void tcg_gen_shlfi_tl(TCGv a, int b, TCGv c)
@@ -261,7 +263,7 @@ void tcg_gen_shlfi_tl(TCGv a, int b, TCGv c)
     TCGv tmp = tcg_temp_new();
     tcg_gen_movi_tl(tmp, b);
     tcg_gen_shl_tl(a, tmp, c);
-    tcg_temp_free(tmp);
+    tcg_temp_free_i32(tmp);
 }
 
 void arc_gen_extract_bits(TCGv ret, TCGv a, TCGv start, TCGv end)
@@ -277,7 +279,7 @@ void arc_gen_extract_bits(TCGv ret, TCGv a, TCGv start, TCGv end)
 
     tcg_gen_and_tl(ret, ret, tmp1);
 
-    tcg_temp_free(tmp1);
+    tcg_temp_free_i32(tmp1);
 }
 
 /* TODO: Get this from props ... */

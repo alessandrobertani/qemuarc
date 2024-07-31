@@ -58,7 +58,7 @@ typedef enum ARC_COND {
 } ARC_COND;
 
 #define ARC_HELPER(NAME, RET, ...) \
-    gen_helper_##NAME(RET, cpu_env, __VA_ARGS__)
+    gen_helper_##NAME(RET, tcg_env, __VA_ARGS__)
 
 
 enum arc_registers {
@@ -117,10 +117,10 @@ void arc_gen_set_debug(const DisasCtxt *ctx, bool value);
 #define setNFlag32(ELEM)  tcg_gen_shri_tl(cpu_Nf, ELEM, 31)
 #endif
 #define setNFlagByNum(ELEM, N) { \
-    TCGv _tmp = tcg_temp_local_new(); \
+    TCGv _tmp = tcg_temp_ebb_new_i32(); \
     tcg_gen_shri_tl(_tmp, ELEM, (N - 1)); \
     tcg_gen_andi_tl(cpu_Nf, _tmp, 1); \
-    tcg_temp_free(_tmp); \
+    tcg_temp_free_i32(_tmp); \
 }
 
 #define setCFlag(ELEM)  tcg_gen_andi_tl(cpu_Cf, ELEM, 1)
@@ -131,10 +131,10 @@ void arc_gen_set_debug(const DisasCtxt *ctx, bool value);
 #define setZFlag(ELEM)  \
     tcg_gen_setcondi_tl(TCG_COND_EQ, cpu_Zf, ELEM, 0);
 #define setZFlagByNum(ELEM, N) { \
-    TCGv _tmp = tcg_temp_local_new(); \
+    TCGv _tmp = tcg_temp_ebb_new_i32(); \
     tcg_gen_andi_tl(_tmp, cpu_Zf, (1 << N) - 1); \
     tcg_gen_setcondi_tl(TCG_COND_EQ, _tmp, ELEM, 0); \
-    tcg_temp_free(_tmp); \
+    tcg_temp_free_i32(_tmp); \
 }
 
 #define nextInsnAddress(R)  tcg_gen_movi_tl(R, ctx->npc)
@@ -204,7 +204,7 @@ void arc_gen_get_bit(TCGv ret, TCGv a, TCGv pos);
 
 #define getRegIndex(R, ID)  tcg_gen_movi_tl(R, (int) ID)
 
-#define readAuxReg(R, A)    gen_helper_lr(R, cpu_env, A)
+#define readAuxReg(R, A)    gen_helper_lr(R, tcg_env, A)
 /*
  * Here, by returning DISAS_UPDATE we are making SR the end
  * of a Translation Block (TB). This is necessary because
@@ -216,7 +216,7 @@ void arc_gen_get_bit(TCGv ret, TCGv a, TCGv pos);
  */
 #define writeAuxReg(NAME, B)             \
     do {                                 \
-        gen_helper_sr(cpu_env, B, NAME); \
+        gen_helper_sr(tcg_env, B, NAME); \
         ret = DISAS_UPDATE;              \
     } while (0)
 
@@ -243,14 +243,14 @@ void arc_gen_get_bit(TCGv ret, TCGv a, TCGv pos);
     do {                                                          \
         tcg_gen_movi_tl(cpu_pc, ctx->cpc);                        \
         gen_helper_leave(cpu_env, U7);                            \
-        TCGv jump_to_blink = tcg_temp_local_new();                \
+        TCGv jump_to_blink = tcg_temp_ebb_new_i32();                \
         TCGLabel *done = gen_new_label();                         \
         tcg_gen_shri_tl(jump_to_blink, U7, 6);                    \
         tcg_gen_brcondi_tl(TCG_COND_EQ, jump_to_blink, 0, done);  \
         gen_goto_tb(ctx, cpu_pc);                                 \
         ret = DISAS_NORETURN;                                     \
         gen_set_label(done);                                      \
-        tcg_temp_free(jump_to_blink);                             \
+        tcg_temp_free_i32(jump_to_blink);                             \
     } while (0)
 
 void arc_gen_mac(TCGv phi, TCGv b, TCGv c);

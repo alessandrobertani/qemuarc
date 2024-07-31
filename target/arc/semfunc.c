@@ -627,8 +627,8 @@ void
 arc_gen_except_no_wait_instructions(DisasCtxt *ctx)
 {
     TCGLabel *done = gen_new_label();
-    TCGv in_kernel_mode = tcg_temp_local_new();
-    TCGv usermode_sleep_enabled = tcg_temp_local_new();
+    TCGv in_kernel_mode = tcg_temp_ebb_new_i32();
+    TCGv usermode_sleep_enabled = tcg_temp_ebb_new_i32();
 
     inKernelMode(in_kernel_mode);
     getUsermodeSleep(usermode_sleep_enabled);
@@ -641,8 +641,8 @@ arc_gen_except_no_wait_instructions(DisasCtxt *ctx)
 
     gen_set_label(done);
 
-    tcg_temp_free(usermode_sleep_enabled);
-    tcg_temp_free(in_kernel_mode);
+    tcg_temp_free_i32(usermode_sleep_enabled);
+    tcg_temp_free_i32(in_kernel_mode);
 }
 
 /*
@@ -654,7 +654,7 @@ arc_gen_VPACK2HL(DisasCtxt *ctx, TCGv a, TCGv b, TCGv c)
   TCGv b_h0 = tcg_temp_new();
   TCGv c_h0 = tcg_temp_new();
 
-  TCGv cc_temp = tcg_temp_local_new();
+  TCGv cc_temp = tcg_temp_ebb_new_i32();
   TCGLabel *cc_done = gen_new_label();
 
   /* Conditional execution */
@@ -671,10 +671,10 @@ arc_gen_VPACK2HL(DisasCtxt *ctx, TCGv a, TCGv b, TCGv c)
 
   /* Conditional execution end. */
   gen_set_label(cc_done);
-  tcg_temp_free(cc_temp);
+  tcg_temp_free_i32(cc_temp);
 
-  tcg_temp_free(b_h0);
-  tcg_temp_free(c_h0);
+  tcg_temp_free_i32(b_h0);
+  tcg_temp_free_i32(c_h0);
 
   return DISAS_NEXT;
 }
@@ -688,7 +688,7 @@ arc_gen_VPACK2HM(DisasCtxt *ctx, TCGv a, TCGv b, TCGv c)
   TCGv b_h1 = tcg_temp_new();
   TCGv c_h1 = tcg_temp_new();
 
-  TCGv cc_temp = tcg_temp_local_new();
+  TCGv cc_temp = tcg_temp_ebb_new_i32();
   TCGLabel *cc_done = gen_new_label();
 
   /* Conditional execution */
@@ -705,10 +705,10 @@ arc_gen_VPACK2HM(DisasCtxt *ctx, TCGv a, TCGv b, TCGv c)
 
   /* Conditional execution end. */
   gen_set_label(cc_done);
-  tcg_temp_free(cc_temp);
+  tcg_temp_free_i32(cc_temp);
 
-  tcg_temp_free(b_h1);
-  tcg_temp_free(c_h1);
+  tcg_temp_free_i32(b_h1);
+  tcg_temp_free_i32(c_h1);
 
   return DISAS_NEXT;
 }

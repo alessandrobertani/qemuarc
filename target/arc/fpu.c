@@ -25,6 +25,7 @@
 #include "fpu/softfloat.h"
 #include "fpu.h"
 #include "qemu/log.h"
+#include "qemu/error-report.h"
 
 uint8_t fpr_width;
 /* Width of vector floating point operations */

@@ -181,14 +181,14 @@ FIELD(STATUS32, Zf,  11, 1)
     tcg_gen_andi_tl(temp, temp, R_STATUS32_ ## FIELD ## _MASK); \
     tcg_gen_andi_tl(STAT_REG, STAT_REG, ~R_STATUS32_ ## FIELD ## _MASK); \
     tcg_gen_or_tl(STAT_REG, STAT_REG, temp); \
-    tcg_temp_free(temp); \
+    tcg_temp_free_i32(temp); \
 }
 #define TCG_SET_STATUS_FIELD_IVALUE(STAT_REG, FIELD, IVALUE) { \
-    TCGv temp = tcg_const_tl((IVALUE << R_STATUS32_ ## FIELD ## _SHIFT) \
+    TCGv temp = tcg_constant_i32((IVALUE << R_STATUS32_ ## FIELD ## _SHIFT) \
                              & R_STATUS32_ ## FIELD ## _MASK); \
     tcg_gen_andi_tl(STAT_REG, STAT_REG, ~R_STATUS32_ ## FIELD ## _MASK); \
     tcg_gen_or_tl(STAT_REG, STAT_REG, temp); \
-    tcg_temp_free(temp); \
+    tcg_temp_free_i32(temp); \
 }
 #define TCG_GET_STATUS_FIELD_MASKED(RET, STAT_REG, FIELD) { \
     tcg_gen_andi_tl(RET, STAT_REG, R_STATUS32_ ## FIELD ## _MASK); \
@@ -401,13 +401,13 @@ static inline bool is_user_mode(const CPUARCState *env)
 
 #include "exec/cpu-all.h"
 
-static inline int cpu_mmu_index(const CPUARCState *env, bool ifetch)
+static inline int arc_cpu_mmu_index(const CPUARCState *env, bool ifetch)
 {
     return GET_STATUS_BIT(env->stat, Uf) != 0 ? 1 : 0;
 }
 
-static inline void cpu_get_tb_cpu_state(CPUARCState *env, target_ulong *pc,
-                                        target_ulong *cs_base,
+static inline void cpu_get_tb_cpu_state(CPUARCState *env, vaddr *pc,
+                                        uint64_t *cs_base,
                                         uint32_t *pflags)
 {
     *pc = env->pc;
@@ -415,7 +415,7 @@ static inline void cpu_get_tb_cpu_state(CPUARCState *env, target_ulong *pc,
     *pflags = 0;
 
 #ifndef CONFIG_USER_ONLY
-    *pflags |= cpu_mmu_index(env, 0);
+    *pflags |= arc_cpu_mmu_index(env, 0);
 #endif
 }
 
@@ -456,7 +456,7 @@ int gdb_v3_core_write(CPUState *cpu, uint8_t *buf, int reg);
 void do_arc_semihosting(CPUARCState *env);
 void arc_sim_open_console(Chardev *chr);
 
-void QEMU_NORETURN arc_raise_exception(CPUARCState *env, uintptr_t host_pc, int32_t excp_idx);
+void G_NORETURN arc_raise_exception(CPUARCState *env, uintptr_t host_pc, int32_t excp_idx);
 
 void arc_mmu_init(CPUARCState *env);
 bool arc_cpu_tlb_fill(CPUState *cs, vaddr address, int size,

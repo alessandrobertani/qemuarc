@@ -20,6 +20,7 @@
 
 #include "qemu/osdep.h"
 #include "exec/gdbstub.h"
+#include"gdbstub/helpers.h"
 #include "arc-common.h"
 #include "target/arc/regs.h"
 #include "irq.h"
@@ -103,9 +104,10 @@ int gdb_v2_core_write(CPUState *cs, uint8_t *mem_buf, int n)
 }
 
 static int
-gdb_v2_aux_read(CPUARCState *env, GByteArray *mem_buf, int regnum)
+gdb_v2_aux_read(CPUState *cs, GByteArray *mem_buf, int regnum)
 {
-    ARCCPU *cpu = env_archcpu(env);
+    ARCCPU *cpu = ARC_CPU(cs);
+    CPUARCState *env = &cpu->env;
     target_ulong regval = 0;
 
     switch (regnum) {
@@ -264,9 +266,10 @@ gdb_v2_aux_read(CPUARCState *env, GByteArray *mem_buf, int regnum)
 }
 
 static int
-gdb_v2_aux_write(CPUARCState *env, uint8_t *mem_buf, int regnum)
+gdb_v2_aux_write(CPUState *cs, uint8_t *mem_buf, int regnum)
 {
-    ARCCPU *cpu = env_archcpu(env);
+    ARCCPU *cpu = ARC_CPU(cs);
+    CPUARCState *env = &cpu->env;
     target_ulong regval = ldl_p(mem_buf);
 
     switch (regnum) {
@@ -451,9 +454,10 @@ int gdb_v3_core_write(CPUState *cs, uint8_t *mem_buf, int n)
 }
 
 static int
-gdb_v3_aux_read(CPUARCState *env, GByteArray *mem_buf, int regnum)
+gdb_v3_aux_read(CPUState *cs, GByteArray *mem_buf, int regnum)
 {
-    ARCCPU *cpu = env_archcpu(env);
+    ARCCPU *cpu = ARC_CPU(cs);
+    CPUARCState *env = &cpu->env;
     target_ulong regval = 0;
 
     switch (regnum) {
@@ -564,9 +568,9 @@ gdb_v3_aux_read(CPUARCState *env, GByteArray *mem_buf, int regnum)
 }
 
 static int
-gdb_v3_aux_write(CPUARCState *env, uint8_t *mem_buf, int regnum)
-{
-    ARCCPU *cpu = env_archcpu(env);
+gdb_v3_aux_write(CPUState *cs, uint8_t *mem_buf, int regnum) {
+    ARCCPU *cpu = ARC_CPU(cs);
+    CPUARCState *env = &cpu->env;
     target_ulong regval = ARCV3_LOAD_MEM(mem_buf);
 
     switch (regnum) {
@@ -654,9 +658,11 @@ gdb_v3_aux_write(CPUARCState *env, uint8_t *mem_buf, int regnum)
 }
 
 static int
-gdb_v3_fpu_read(CPUARCState *env, GByteArray *mem_buf, int regnum)
+gdb_v3_fpu_read(CPUState *cs, GByteArray *mem_buf, int regnum)
 {
-    ARCCPU *cpu = env_archcpu(env);
+    ARCCPU *cpu = ARC_CPU(cs);
+    CPUARCState *env = &cpu->env;
+
     switch (regnum) {
     case 0 ... 31:
         return gdb_get_reg64(mem_buf, env->fpr[regnum]);
@@ -674,8 +680,10 @@ gdb_v3_fpu_read(CPUARCState *env, GByteArray *mem_buf, int regnum)
 }
 
 static int
-gdb_v3_fpu_write(CPUARCState *env, uint8_t *mem_buf, int regnum)
+gdb_v3_fpu_write(CPUState *cs, uint8_t *mem_buf, int regnum)
 {
+    ARCCPU *cpu = ARC_CPU(cs);
+    CPUARCState *env = &cpu->env;
     switch (regnum) {
     case 0 ... 31:
         env->fpr[regnum] = ldq_p(mem_buf);
@@ -702,28 +710,24 @@ void arc_cpu_register_gdb_regs_for_features(ARCCPU *cpu)
         gdb_register_coprocessor(cs,
           /* getter */           gdb_v2_aux_read,
           /* setter */           gdb_v2_aux_write,
-          /* number of regs */   GDB_ARCV2_AUX_LAST,
-          /* feature file */     GDB_ARCV2_AUX_XML,
+          /* feature file */     gdb_find_static_feature(GDB_ARCV2_AUX_XML),
           /* pos. in g packet */ 0);
     } else if (cpu->family & ARC_OPCODE_ARC32) {
         gdb_register_coprocessor(cs,
                                  gdb_v3_aux_read,
                                  gdb_v3_aux_write,
-                                 GDB_ARCV3_AUX_LAST,
-                                 GDB_ARCV3_32_AUX_XML,
+                                 gdb_find_static_feature(GDB_ARCV3_32_AUX_XML),
                                  0);
     } else if (cpu->family & ARC_OPCODE_ARC64) {
         gdb_register_coprocessor(cs,
                                  gdb_v3_aux_read,
                                  gdb_v3_aux_write,
-                                 GDB_ARCV3_AUX_LAST,
-                                 GDB_ARCV3_64_AUX_XML,
+                                 gdb_find_static_feature(GDB_ARCV3_64_AUX_XML),
                                  0);
         gdb_register_coprocessor(cs,
                                  gdb_v3_fpu_read,
                                  gdb_v3_fpu_write,
-                                 GDB_ARCV3_FPU_LAST,
-                                 GDB_ARCV3_64_FPU_XML,
+                                 gdb_find_static_feature(GDB_ARCV3_64_FPU_XML),
                                  0);
     } else {
         g_assert_not_reached();

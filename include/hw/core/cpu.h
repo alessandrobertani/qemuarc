@@ -195,6 +195,7 @@ struct CPUClass {
  * Fix the number of mmu modes to 16, which is also the maximum
  * supported by the softmmu tlb api.
  */
+#undef NB_MMU_MODES
 #define NB_MMU_MODES 16
 
 /* Use a fully associative victim tlb of 8 entries. */

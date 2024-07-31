@@ -438,14 +438,14 @@ void aux_irq_set(const struct arc_aux_reg_detail *aux_reg_detail,
         break;
 
     case AUX_ID_aux_irq_hint:
-        qemu_mutex_lock_iothread();
+        bql_lock();
         if (val == 0) {
             qemu_irq_lower(env->irq[env->aux_irq_hint]);
         } else if (val >= NR_OF_EXCEPTIONS) {
             qemu_irq_raise(env->irq[val]);
             env->aux_irq_hint = val;
         }
-        qemu_mutex_unlock_iothread();
+        bql_unlock();
         break;
 
     case AUX_ID_irq_pulse_cancel:

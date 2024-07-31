@@ -25,6 +25,7 @@
 #include "fpu/softfloat.h"
 #include "fpu.h"
 #include "qemu/log.h"
+#include "qemu/error-report.h"
 
 enum arc_fcvt32 {
     ARC_FCVT32_FS2INT =     0b000011,

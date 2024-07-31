@@ -90,14 +90,14 @@ static void cpu_arc_timer_expire(CPUARCState *env, uint32_t timer)
     uint32_t overflow = env->timer[timer].T_Cntrl & TMR_IP;
     /* Set the IP bit. */
 
-    bool unlocked = !qemu_mutex_iothread_locked();
+    bool unlocked = !bql_locked();
     if (unlocked) {
-        qemu_mutex_lock_iothread();
+        bql_lock();
     }
     env->timer[timer].T_Cntrl |= TMR_IP;
     env->timer[timer].last_clk = get_ns(env);
     if (unlocked) {
-        qemu_mutex_unlock_iothread();
+        bql_unlock();
     }
 
     /* Raise an interrupt if enabled. */
@@ -233,14 +233,14 @@ static uint32_t cpu_arc_count_get(CPUARCState *env, uint32_t timer)
 static void cpu_arc_count_set(CPUARCState *env, uint32_t timer, uint32_t val)
 {
     assert(timer == 0 || timer == 1);
-    bool unlocked = !qemu_mutex_iothread_locked();
+    bool unlocked = !bql_locked();
     if (unlocked) {
-        qemu_mutex_lock_iothread();
+        bql_lock();
     }
     env->timer[timer].last_clk = get_ns(env) - CYCLES_TO_NS(val);
     cpu_arc_timer_update(env, timer);
     if (unlocked) {
-        qemu_mutex_unlock_iothread();
+        bql_unlock();
     }
 }
 
@@ -271,16 +271,16 @@ static void cpu_arc_control_set(CPUARCState *env,
                                 uint32_t timer, uint32_t value)
 {
     assert(timer == 1 || timer == 0);
-    bool unlocked = !qemu_mutex_iothread_locked();
+    bool unlocked = !bql_locked();
     if (unlocked) {
-        qemu_mutex_lock_iothread();
+        bql_lock();
     }
     if ((env->timer[timer].T_Cntrl & TMR_IP) && !(value & TMR_IP)) {
         qemu_irq_lower(env->irq[TIMER0_IRQ + (timer)]);
     }
     env->timer[timer].T_Cntrl = value & 0x1f;
     if (unlocked) {
-        qemu_mutex_unlock_iothread();
+        bql_unlock();
     }
 }
 
@@ -430,7 +430,7 @@ void aux_timer_set(const struct arc_aux_reg_detail *aux_reg_detail,
     qemu_log_mask(LOG_UNIMP, "[TMRx] AUX[%s] <= 0x" TARGET_FMT_lx "\n",
                   aux_reg_detail->name, val);
 
-    qemu_mutex_lock_iothread();
+    bql_lock();
     switch (aux_reg_detail->id) {
     case AUX_ID_control0:
         if (env_archcpu(env)->timer_build & TB_T0) {
@@ -471,7 +471,7 @@ void aux_timer_set(const struct arc_aux_reg_detail *aux_reg_detail,
     default:
         break;
     }
-    qemu_mutex_unlock_iothread();
+    bql_unlock();
 }
 
 

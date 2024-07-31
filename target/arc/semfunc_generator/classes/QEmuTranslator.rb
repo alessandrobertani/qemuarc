@@ -12,11 +12,11 @@ class QEmuTranslator
       SemanticFunctionAST.function("createTmpVar", SemanticFunctionAST.var("name")) =>
         "TCGv $name = tcg_temp_new()",
       SemanticFunctionAST.function("defVariable", SemanticFunctionAST.var("name")) =>
-        "TCGv $name = tcg_temp_local_new()",
+        "TCGv $name = tcg_temp_ebb_new_i32()",
       SemanticFunctionAST.function("freeVariable", SemanticFunctionAST.var("name")) =>
-        "tcg_temp_free($name)",
+        "tcg_temp_free_i32($name)",
       SemanticFunctionAST.function("freeReference", SemanticFunctionAST.var("name")) =>
-        "if($name != NULL) tcg_temp_free($name)",
+        "if($name != NULL) tcg_temp_free_i32($name)",
       SemanticFunctionAST.function("defReference", SemanticFunctionAST.var("name")) =>
         "TCGv $name = NULL /* REFERENCE */",
 
@@ -47,7 +47,7 @@ class QEmuTranslator
         ret = "TCGv #{mappings["name"]} = NULL"
       end
       if mappings["type"] == "TCGv"
-        ret = "TCGv #{mappings["name"]} = tcg_temp_local_new()"
+        ret = "TCGv #{mappings["name"]} = tcg_temp_ebb_new_i32()"
       end
       ret
     }

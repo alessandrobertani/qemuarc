@@ -26,7 +26,7 @@
 #include "fpu/softfloat-helpers.h"
 #include "fpu.h"
 #include "qemu/log.h"
-
+#include "qemu/error-report.h"
 
 /* Soft fpu helper of type floatSIZE_operation */
 #define FLOAT_INST3_HELPERS(NAME, HELPER, SIZE)                         \

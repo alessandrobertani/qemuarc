@@ -363,10 +363,10 @@ static void arc_cpu_init(Object *obj)
     /* Initialize aux-regs. */
     arc_aux_regs_init();
 
-    cpu_set_cpustate_pointers(cpu);
+    // Removed call to cpu_set_cpustate_pointers
 }
 
-static gchar *arc_gdb_arch_name(CPUState *cs)
+static const gchar *arc_gdb_arch_name(CPUState *cs)
 {
 #if defined(TARGET_ARC32)
     ARCCPU *cpu = ARC_CPU(cs);

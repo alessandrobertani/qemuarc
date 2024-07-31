@@ -597,13 +597,13 @@ arc_mmu_get_prot_for_index(uint32_t index, CPUARCState *env)
 }
 #endif
 
-static void QEMU_NORETURN raise_mem_exception(
+static void G_NORETURN raise_mem_exception(
         CPUState *cs, target_ulong addr, uintptr_t host_pc,
         struct mem_exception *excp)
 {
     CPUARCState *env = &(ARC_CPU(cs)->env);
     if (excp->number != EXCP_TLB_MISS_I) {
-        cpu_restore_state(cs, host_pc, true);
+        cpu_restore_state(cs, host_pc);
     }
 
     env->efa = addr;
@@ -734,7 +734,7 @@ arc_get_physical_addr_v3(struct CPUState *cs, hwaddr *paddr, vaddr addr,
     return true;
 #else
     CPUARCState *env = &((ARC_CPU(cs))->env);
-    uintptr_t mmu_idx = cpu_mmu_index(env, true);
+    uintptr_t mmu_idx = cpu_mmu_index(cs, true);
     int action = decide_action(env, addr, mmu_idx);
     struct mem_exception excp;
 

@@ -25,6 +25,7 @@
 #include "exec/helper-proto.h"
 #include "exec/cpu_ldst.h"
 #include "exec/ioport.h"
+#include "exec/tb-flush.h"
 #include "target/arc/regs.h"
 #include "mmu.h"
 #include "hw/arc/cpudevs.h"
@@ -285,7 +286,7 @@ target_ulong helper_lr(CPUARCState *env, target_ulong aux)
     return result;
 }
 
-void QEMU_NORETURN helper_halt(CPUARCState *env, target_ulong npc)
+void G_NORETURN helper_halt(CPUARCState *env, target_ulong npc)
 {
     CPUState *cs = env_cpu(env);
     if (GET_STATUS_BIT(env->stat, Uf)) {
@@ -355,7 +356,7 @@ void helper_flush(CPUARCState *env)
  * We expect that ENV->PC has already been updated.
  */
 
-void QEMU_NORETURN helper_raise_exception(CPUARCState *env,
+void G_NORETURN helper_raise_exception(CPUARCState *env,
                                           target_ulong index,
                                           target_ulong causecode,
                                           target_ulong param)

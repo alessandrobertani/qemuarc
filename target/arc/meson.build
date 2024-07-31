@@ -54,4 +54,4 @@ arc_softmmu_ss.add(files(
 ))
 
 target_arch += {'arc': arc_softmmu_ss}
-target_softmmu_arch += {'arc': arc_softmmu_ss}
+target_system_arch += {'arc': arc_softmmu_ss}
