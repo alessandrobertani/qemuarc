@@ -24,6 +24,14 @@
 #include "tcg/tcg-op-gvec.h"
 #include "target/arc/semfunc.h"
 #include "target/arc/arc-common.h"
+#include "exec/helper-proto.h"
+#include "exec/helper-gen.h"
+#include "exec/translator.h"
+#include "exec/log.h"
+
+#define HELPER_H "helper.h"
+#include "exec/helper-info.c.inc"
+#undef HELPER_H
 
 
 /* Globals */
