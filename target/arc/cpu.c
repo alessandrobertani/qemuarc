@@ -31,6 +31,7 @@
 #include "timer.h"
 #include "gdbstub.h"
 #include "fpu.h"
+#include "qemu/timer.h"
 
 #ifndef CONFIG_USER_ONLY
 static const VMStateDescription vms_arc_cpu = {
@@ -209,7 +210,6 @@ static void arc_cpu_disas_set_info(CPUState *cs, disassemble_info *info)
 
     info->endian = BFD_ENDIAN_LITTLE;
 }
-
 
 static void arc_cpu_realizefn(DeviceState *dev, Error **errp)
 {
@@ -394,6 +394,12 @@ static const struct SysemuCPUOps arc_sysemu_ops = {
 #ifdef CONFIG_TCG
 #include "hw/core/tcg-cpu-ops.h"
 
+bool arc_cpu_exec_halt(CPUState *cs){
+    return cpu_has_work(cs);
+}
+
+
+
 static struct TCGCPUOps arc_tcg_ops = {
     .initialize = arc_translate_init,
     .synchronize_from_tb = arc_cpu_synchronize_from_tb,
@@ -405,6 +411,7 @@ static struct TCGCPUOps arc_tcg_ops = {
     .tlb_fill = arc_cpu_tlb_fill,
     .cpu_exec_interrupt = arc_cpu_exec_interrupt,
     .do_interrupt = arc_cpu_do_interrupt,
+    .cpu_exec_halt = arc_cpu_exec_halt,
 #endif /* !CONFIG_USER_ONLY */
 };
 #endif /* CONFIG_TCG */
