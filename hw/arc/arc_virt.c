@@ -22,6 +22,7 @@
 #include "hw/boards.h"
 #include "hw/arc/virt.h"
 #include "cpu.h"
+#include "qemu/units.h"
 
 /*
  * Available command line properties, defined by:
@@ -33,11 +34,20 @@ static Property arc_virt_properties[] = {
     DEFINE_PROP_END_OF_LIST(),
 };
 
+static void arc_virt_machine_init(MachineClass *mc) {
+    mc->default_ram_size = 4 * GiB;
+    mc->default_cpus = 1;
+    mc->default_ram_id = "ram0";
+    mc->is_default = true;
+}
+
 /* Definition of parent ARC virtual machine */
 static void arc_virt_machine_class_init(ObjectClass *oc, void *data)
-{
-    DeviceClass *dc = DEVICE_CLASS(oc);
+{   
+    printf("****************** Definition of machine %p", oc);
     MachineClass *mc = MACHINE_CLASS(oc);
+    // printf("****************** Definition of device %p", oc);
+    // DeviceClass *dc = DEVICE_CLASS(oc);
 
 #ifdef TARGET_ARC64
     mc->default_cpu_type = TYPE_ARC_CPU_HS6X;
@@ -45,7 +55,8 @@ static void arc_virt_machine_class_init(ObjectClass *oc, void *data)
     mc->default_cpu_type = TYPE_ARC_CPU_ARCHS;
 #endif
 
-    device_class_set_props(dc, arc_virt_properties);
+    //device_class_set_props(dc, arc_virt_properties);
+    arc_virt_machine_init(mc);
 }
 
 static const TypeInfo arc_virt_machine_info = {
@@ -58,7 +69,8 @@ static const TypeInfo arc_virt_machine_info = {
 };
 
 static void machvirt_machine_init(void)
-{
+{   
+    printf("Initializing virtual machine");
     type_register_static(&arc_virt_machine_info);
 }
 type_init(machvirt_machine_init);
