@@ -690,9 +690,9 @@ page_table_traverse(CPUARCState *env,
 #undef PTE_PADDR_MASK
 #undef PADDR
 
-void arc_mmu_init_v6(CPUARCState *env)
+void arc_mmu_init_v6(ARCCPU *cpu)
 {
-    ARCCPU *cpu = env_archcpu(env);
+    // ARCCPU *cpu = env_archcpu(env);
 
     switch(cpu->family) {
     case ARC_OPCODE_ARC64:

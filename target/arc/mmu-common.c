@@ -29,7 +29,7 @@
 
 /* MMU Callback funtions struture */
 struct mmu_callbacks_struct {
-  void (*arc_mmu_init_cb)(CPUARCState *env);
+  void (*arc_mmu_init_cb)(ARCCPU *cpu);
   bool (*arc_get_physical_addr_cb)(struct CPUState *cs, hwaddr *paddr, vaddr addr,
 				enum mmu_access_type rwe, bool probe,
 				uintptr_t retaddr);
@@ -87,8 +87,9 @@ enum mmu_version get_mmu_version(CPUARCState *env) {
 
 /* TODO: Fill in for v3 mmu as well */
 
-void arc_mmu_init(CPUARCState *env) {
-  MMU_CALLBACK(arc_mmu_init, env);
+void arc_mmu_init(ARCCPU *cpu) {
+  CPUARCState *env = &(cpu->env);
+  MMU_CALLBACK(arc_mmu_init, cpu);
 }
 
 bool

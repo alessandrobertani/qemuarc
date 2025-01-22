@@ -114,7 +114,7 @@ static void arc_cpu_reset(DeviceState *dev)
 
 #ifndef CONFIG_USER_ONLY
     /* Initialize mmu/reset it. */
-    arc_mmu_init(env);
+    arc_mmu_init(cpu);
 
     arc_mpu_init(cpu);
 #endif
@@ -435,6 +435,7 @@ static void arc_cpu_class_init(ObjectClass *oc, void *data)
     cc->disas_set_info = arc_cpu_disas_set_info;
     cc->gdb_arch_name = arc_gdb_arch_name;
     cc->tcg_ops = &arc_tcg_ops;
+    cc->mmu_index = arc_cpu_mmu_index;
 
 #ifndef CONFIG_USER_ONLY
     cc->memory_rw_debug = arc_cpu_memory_rw_debug;

@@ -35,8 +35,8 @@ typedef struct CPUArchState CPUARCState;
 
 #include "hw/registerfields.h"
 
-#define ARC_CPU_TYPE_SUFFIX "-" TYPE_ARC_CPU
-#define ARC_CPU_TYPE_NAME(name) (name ARC_CPU_TYPE_SUFFIX)
+// #define ARC_CPU_TYPE_SUFFIX "-" TYPE_ARC_CPU
+// #define ARC_CPU_TYPE_NAME(name) (name ARC_CPU_TYPE_SUFFIX)
 #define CPU_RESOLVING_TYPE TYPE_ARC_CPU
 
 #define TYPE_ARC_CPU_ANY               ARC_CPU_TYPE_NAME("any")
@@ -401,8 +401,9 @@ static inline bool is_user_mode(const CPUARCState *env)
 
 #include "exec/cpu-all.h"
 
-static inline int arc_cpu_mmu_index(const CPUARCState *env, bool ifetch)
+static inline int arc_cpu_mmu_index(CPUState *cs, bool ifetch)
 {
+    CPUARCState *env = &ARC_CPU(cs)->env;
     return GET_STATUS_BIT(env->stat, Uf) != 0 ? 1 : 0;
 }
 
@@ -413,9 +414,10 @@ static inline void cpu_get_tb_cpu_state(CPUARCState *env, vaddr *pc,
     *pc = env->pc;
     *cs_base = 0;
     *pflags = 0;
+    CPUState *cs = env_cpu(env);
 
 #ifndef CONFIG_USER_ONLY
-    *pflags |= arc_cpu_mmu_index(env, 0);
+    *pflags |= arc_cpu_mmu_index(cs, 0);
 #endif
 }
 
@@ -459,7 +461,7 @@ void arc_sim_open_console(Chardev *chr);
 
 void G_NORETURN arc_raise_exception(CPUARCState *env, uintptr_t host_pc, int32_t excp_idx);
 
-void arc_mmu_init(CPUARCState *env);
+void arc_mmu_init(ARCCPU * cpu);
 bool arc_cpu_tlb_fill(CPUState *cs, vaddr address, int size,
                       MMUAccessType access_type, int mmu_idx,
                       bool probe, uintptr_t retaddr);

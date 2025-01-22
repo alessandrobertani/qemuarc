@@ -83,7 +83,7 @@ struct mem_exception {
 struct CPUARCState;
 
 /* ARCv2 MMU functions */
-void arc_mmu_init_v3(CPUARCState *env);
+void arc_mmu_init_v3(ARCCPU *cpu);
 bool
 arc_get_physical_addr_v3(struct CPUState *cs, hwaddr *paddr, vaddr addr,
                   enum mmu_access_type rwe, bool probe,
@@ -95,7 +95,7 @@ hwaddr arc_mmu_debug_translate_v3(CPUARCState *env, vaddr addr);
 void arc_mmu_disable_v3(CPUARCState *env);
 
 /* ARCv3 MMU functions */
-void arc_mmu_init_v6(CPUARCState *env);
+void arc_mmu_init_v6(ARCCPU *cpu);
 bool
 arc_get_physical_addr_v6(struct CPUState *cs, hwaddr *paddr, vaddr addr,
                   enum mmu_access_type rwe, bool probe,

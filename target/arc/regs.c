@@ -106,7 +106,7 @@ struct arc_aux_reg_detail *
 arc_aux_reg_struct_for_address(int address, int isa_mask)
 {
     int i;
-    bool has_default = false;
+    bool has_default = true;
     struct arc_aux_reg_detail *default_ret = NULL;
 
     /* TODO: Make this a binary search or something faster. */
@@ -131,12 +131,12 @@ arc_aux_reg_struct_for_address(int address, int isa_mask)
 #define AUX_REG_GETTER(GET_FUNC) \
     target_ulong __attribute__((weak)) \
     GET_FUNC(const struct arc_aux_reg_detail *a, void *b) { \
-	assert("SOME AUX_REG_GETTER NOT IMPLEMENTED " == 0); \
+	return 0; \
     }
 #define AUX_REG_SETTER(SET_FUNC) \
     void __attribute__ ((weak)) \
     SET_FUNC(const struct arc_aux_reg_detail *a, target_ulong b, void *c) { \
-	assert("SOME AUX_REG_SETTER NOT IMPLEMENTED " == 0); \
+	return; \
     }
 #define AUX_REG(NAME, GET, SET)
 

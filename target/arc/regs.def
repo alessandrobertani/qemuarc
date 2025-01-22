@@ -43,6 +43,18 @@ AUX_REG_SETTER(arc_jli_regs_set)
 AUX_REG_GETTER(arconnect_regs_get)
 AUX_REG_SETTER(arconnect_regs_set)
 
+
+/**************** MICRON AUXILIARY REGS *******************/
+AUX_REG_GETTER(fake_aux_get)
+AUX_REG_SETTER(fake_aux_set)
+
+AUX_REG (aux_bpu_flush, fake_aux_get, fake_aux_set)
+AUX_REG (lpb_ctrl, fake_aux_get, fake_aux_set)
+AUX_REG (data_mem_attr, fake_aux_get, fake_aux_set)
+AUX_REG (write_buff_disable, fake_aux_get, fake_aux_set)
+AUX_REG (csm_ecc_ctrl, fake_aux_get, fake_aux_set)
+/**********************************************************/
+
 AUX_REG (unimp_bcr, arc_general_regs_get, NULL)
 AUX_REG (acg_ctrl, NULL, NULL)
 AUX_REG (acr, NULL, NULL)

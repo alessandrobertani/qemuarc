@@ -82,26 +82,26 @@ void arc_load_kernel(ARCCPU *cpu, struct arc_boot_info *info)
                            false, /* little endian */
                            elf_machine, 1, 0);
 
-    if (kernel_size < 0) {
-        int is_linux;
+    // if (kernel_size < 0) {
+    //     int is_linux;
 
-        kernel_size = load_uimage(info->kernel_filename, &entry, NULL,
-                                  &is_linux, NULL, NULL);
-        if (!is_linux) {
-            error_report("Wrong U-Boot image, only Linux kernel is supported");
-            exit(EXIT_FAILURE);
-        }
-    }
+    //     kernel_size = load_uimage(info->kernel_filename, &entry, NULL,
+    //                               &is_linux, NULL, NULL);
+    //     if (!is_linux) {
+    //         error_report("Wrong U-Boot image, only Linux kernel is supported");
+    //         exit(EXIT_FAILURE);
+    //     }
+    // }
 
-    if (kernel_size < 0) {
-        error_report("No kernel image found");
-        exit(EXIT_FAILURE);
-    }
+    // if (kernel_size < 0) {
+    //     error_report("No kernel image found");
+    //     exit(EXIT_FAILURE);
+    // }
 
     cpu->env.boot_info = info;
 
     /* Set CPU's PC to point to the entry-point */
-    cpu->env.pc = entry;
+    cpu->env.pc = 0;
 }
 
 

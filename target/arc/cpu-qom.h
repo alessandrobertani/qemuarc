@@ -27,8 +27,11 @@
 typedef struct ArchCPU ARCCPU;
 typedef struct ARCCPUClass ARCCPUClass;
 typedef struct CPUArchState CPUARCState;
-DECLARE_OBJ_CHECKERS(ARCCPU, ARCCPUClass,
-                     ARC_CPU, TYPE_ARC_CPU)
+// DECLARE_OBJ_CHECKERS(ARCCPU, ARCCPUClass, ARC_CPU, TYPE_ARC_CPU)
+OBJECT_DECLARE_CPU_TYPE(ARCCPU, ARCCPUClass, ARC_CPU)
+
+#define ARC_CPU_TYPE_SUFFIX "-" TYPE_ARC_CPU
+#define ARC_CPU_TYPE_NAME(model) model ARC_CPU_TYPE_SUFFIX
 
 /*
  *  ARCCPUClass:

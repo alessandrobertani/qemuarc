@@ -702,9 +702,9 @@ static int decide_action(const CPUARCState *env,
 
 #endif
 
-void arc_mmu_init_v3(CPUARCState *env)
+void arc_mmu_init_v3(ARCCPU *cpu)
 {
-    ARCCPU *cpu = env_archcpu(env);
+    CPUARCState *env = &(cpu->env);
 
     env->mmu.v3.enabled = 0;
     env->mmu.v3.pid_asid = 0;

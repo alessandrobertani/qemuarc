@@ -184,7 +184,7 @@ static void virt_machine_init(MachineClass *mc)
     mc->init = virt_init;
     mc->max_cpus = 1;
     mc->is_default = true;
-    mc->default_ram_size = 2 * GiB;
+    mc->default_ram_size = 4 * GiB;
 }
 
 static void virt_machine_init_class_init(ObjectClass *oc, void *data)

@@ -30,7 +30,7 @@
  */
 static Property arc_virt_properties[] = {
     /* Default value kept at 0x8000_0000 for compatibility reasons */
-    DEFINE_PROP_UINT64("ram-start", ARCVirtMachineState, ram_start, 0x80000000),
+    DEFINE_PROP_UINT64("ram-start", ARCVirtMachineState, ram_start, 0x00000000),
     DEFINE_PROP_END_OF_LIST(),
 };
 
